@@ -46,4 +46,17 @@ class TransactionController extends Controller
             ]);
         });
     }
+
+    public function index()
+    {
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        $transactions = $user->transactions()
+            ->with(['account', 'category'])
+            ->orderBy('transaction_date', 'desc')
+            ->paginate(15);
+
+        return response()->json($transactions);
+    }
 }
