@@ -10,7 +10,6 @@ class Account extends Model
 {
     protected $fillable = ['name', 'balance', 'currency', 'user_id'];
 
-    // Счет принадлежит конкретному пользователю
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -4,24 +4,57 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\Account;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use Inertia\Response;
+use Illuminate\Http\RedirectResponse;
 
 class TransactionController extends Controller
 {
-    public function store(Request $request)
+    public function index(Request $request): Response
+    {
+        $user = Auth::user();
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $transactions = $user->transactions()
+            ->with(['account', 'category'])
+            ->with(['account', 'category'])
+            ->when($request->input('search'), function ($query, $search) {
+                $query->where('description', 'like', "%{$search}%");
+            })
+            ->when($request->input('account_id'), function ($query, $accountId) {
+                $query->where('account_id', $accountId);
+            })
+            ->orderBy('transaction_date', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        return Inertia::render('transactions/Index', [
+            'transactions' => $transactions,
+            'accounts' => $user->accounts()->get(['id', 'name']),
+            'categories' => Category::all(['id', 'name', 'type']),
+            'filters' => $request->only(['search', 'account_id']),
+        ]);
+    }
+
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'account_id' => 'required|exists:accounts,id',
             'category_id' => 'required|exists:categories,id',
-            'amount' => 'required|numeric',
+            'amount' => 'required|numeric|min:0.01',
             'transaction_date' => 'required|date',
             'description' => 'nullable|string|max:255',
         ]);
 
-        return DB::transaction(function () use ($validated) {
-            $transaction = Transaction::create([
-                'user_id' => \Illuminate\Support\Facades\Auth::id(),
+        DB::transaction(function () use ($validated) {
+            Transaction::create([
+                'user_id' => Auth::id(),
                 'account_id' => $validated['account_id'],
                 'category_id' => $validated['category_id'],
                 'amount' => $validated['amount'],
@@ -29,8 +62,8 @@ class TransactionController extends Controller
                 'description' => $validated['description'],
             ]);
 
-            $account = Account::find($validated['account_id']);
-            $category = \App\Models\Category::find($validated['category_id']);
+            $account = Account::findOrFail($validated['account_id']);
+            $category = Category::findOrFail($validated['category_id']);
 
             if ($category->type === 'expense') {
                 $account->balance -= $validated['amount'];
@@ -39,24 +72,27 @@ class TransactionController extends Controller
             }
 
             $account->save();
-
-            return response()->json([
-                'message' => 'Транзакция успешно проведена',
-                'new_balance' => $account->balance
-            ]);
         });
+
+        return redirect()->back()->with('success', 'Транзакция успешно проведена');
     }
 
-    public function index()
+    public function destroy(Transaction $transaction): RedirectResponse
     {
-        /** @var \App\Models\User $user */
-        $user = \Illuminate\Support\Facades\Auth::user();
+        DB::transaction(function () use ($transaction) {
+            $account = $transaction->account;
+            $category = $transaction->category;
 
-        $transactions = $user->transactions()
-            ->with(['account', 'category'])
-            ->orderBy('transaction_date', 'desc')
-            ->paginate(15);
+            if ($category->type === 'expense') {
+                $account->balance += $transaction->amount;
+            } else {
+                $account->balance -= $transaction->amount;
+            }
 
-        return response()->json($transactions);
+            $account->save();
+            $transaction->delete();
+        });
+
+        return redirect()->back()->with('success', 'Операция отменена, баланс обновлен');
     }
 }

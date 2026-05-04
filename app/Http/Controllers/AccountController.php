@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Auth;
 class AccountController extends Controller
 {
     public function index()
-{
-    /** @var \App\Models\User $user */
-    $user = Auth::user();
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
-    $accounts = $user->accounts()->get();
+        $accounts = $user->accounts()->get();
 
-    return response()->json($accounts);
-}
+        return response()->json($accounts);
+    }
 }
