@@ -34,7 +34,7 @@ class TransactionController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return Inertia::render('transactions/Index', [
+        return Inertia::render('kazna/TransactionsPage', [
             'transactions' => $transactions,
             'accounts' => $user->accounts()->get(['id', 'name']),
             'categories' => Category::all(['id', 'name', 'type']),
