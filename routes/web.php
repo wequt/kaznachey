@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountCategoryController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/directories/categories/{category}', [AccountCategoryController::class, 'destroyCategory'])->name('categories.destroy');
 
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+
+    Route::get('/budgets', [BudgetController::class, 'index'])->name('budgets.index');
+Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
 });
 
 require __DIR__ . '/settings.php';
