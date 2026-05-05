@@ -45,7 +45,7 @@ const deleteCategory = (id: number) => {
 <template>
     <Head title="Счета и категории" />
 
-    <div class="min-h-screen bg-gray-50 py-12 px-4">
+    <div class="min-h-screen bg-[#FDFCFB] py-12 px-4">
         <div class="max-w-7xl mx-auto">
             <h2 class="font-semibold text-2xl text-gray-800 mb-8">Управление счетами и категориями</h2>
 

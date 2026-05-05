@@ -11,7 +11,6 @@ import {
     ChartOptions 
 } from 'chart.js';
 
-// Регистрация компонентов Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const props = defineProps<{
@@ -21,17 +20,14 @@ const props = defineProps<{
     filters: { date_from: string, date_to: string };
 }>();
 
-// Состояние фильтров
 const selectedType = ref('expense'); 
 const dateFrom = ref(props.filters.date_from);
 const dateTo = ref(props.filters.date_to);
 
-// ИСПРАВЛЕНО: используем .value вместо .ref (как было на image_39e084.png)
 const currentStats = computed(() => 
     selectedType.value === 'expense' ? props.expensesStats : props.incomeStats
 );
 
-// Применение фильтра дат через Inertia router
 const applyFilters = () => {
     router.get('/analytics', { 
         date_from: dateFrom.value, 
@@ -39,7 +35,6 @@ const applyFilters = () => {
     }, { preserveState: true });
 };
 
-// Данные для диаграммы
 const chartData = computed<ChartData<'doughnut'>>(() => ({
     labels: currentStats.value.map(item => item.name),
     datasets: [{
@@ -66,11 +61,10 @@ const formatMoney = (amount: number) => {
 <template>
     <Head title="Аналитика" />
 
-    <div class="min-h-screen bg-gray-50 py-12 px-4">
+    <div class="min-h-screen bg-[#FDFCFB] py-12 px-4">
         <div class="max-w-5xl mx-auto">
             <h2 class="font-semibold text-2xl text-gray-800 mb-8">Аналитика финансов</h2>
 
-            <!-- Верхняя панель фильтров -->
             <div class="bg-white p-6 rounded-xl shadow-sm mb-8 flex flex-wrap items-end gap-4 border border-gray-100">
                 <div class="flex-1 min-w-50">
                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Период</label>
@@ -91,7 +85,6 @@ const formatMoney = (amount: number) => {
                 </div>
             </div>
 
-            <!-- Карточки итогов за период -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-green-500">
                     <p class="text-xs text-gray-400 uppercase font-bold mb-1">Доходы за период</p>
@@ -108,7 +101,6 @@ const formatMoney = (amount: number) => {
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Визуализация -->
                 <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                     <h3 class="text-lg font-medium mb-8" style="color: #A66353;">
                         {{ selectedType === 'expense' ? 'Структура расходов' : 'Структура доходов' }}
@@ -121,7 +113,6 @@ const formatMoney = (amount: number) => {
                     </div>
                 </div>
 
-                <!-- Список категорий -->
                 <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                     <h3 class="text-lg font-medium mb-6" style="color: #A66353;">Детализация</h3>
                     <div class="space-y-5">

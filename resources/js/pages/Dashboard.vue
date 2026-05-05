@@ -11,6 +11,7 @@ import {
     PiggyBank,
     TrendingUp
 } from 'lucide-vue-next'; 
+import { computed } from 'vue';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -20,7 +21,16 @@ const props = defineProps<{
     monthStats: Array<{ name: string, total: number }>;
 }>();
 
-const chartData = {
+const totalSpent = computed(() => {
+    if (!props.monthStats || props.monthStats.length === 0) return 0;
+    
+    return props.monthStats.reduce((acc, item) => {
+        const val = Number(item.total);
+        return acc + (isNaN(val) ? 0 : val);
+    }, 0);
+});
+
+const chartData = computed(() => ({
     labels: props.monthStats.map(item => item.name),
     datasets: [{
         backgroundColor: ['#A66353', '#C28476', '#8A4B3D', '#D9AFA6', '#703A2F'],
@@ -28,9 +38,12 @@ const chartData = {
         borderWidth: 0,
         cutout: '75%'
     }]
-};
+}));
 
-const formatMoney = (amount: number) => new Intl.NumberFormat('ru-RU').format(amount) + ' ₽';
+const formatMoney = (amount: number) => {
+    if (isNaN(amount)) return '0 ₽';
+    return new Intl.NumberFormat('ru-RU').format(amount) + ' ₽';
+};
 </script>
 
 <template>
@@ -73,7 +86,7 @@ const formatMoney = (amount: number) => new Intl.NumberFormat('ru-RU').format(am
                             <span class="text-[10px] text-slate-400 uppercase font-bold">Графики</span>
                         </Link>
 
-                        <Link href="/budgets" class="group p-4 bg-white border border-slate-100 rounded-2xl hover:border-[#A66353] hover:shadow-md transition-all opacity-80 hover:opacity-100">
+                        <Link href="/budgets" class="group p-4 bg-white border border-slate-100 rounded-2xl hover:border-[#A66353] hover:shadow-md transition-all">
                             <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-[#A66353] group-hover:text-white transition-colors mb-3">
                                 <PiggyBank class="w-5 h-5" />
                             </div>
@@ -83,7 +96,7 @@ const formatMoney = (amount: number) => new Intl.NumberFormat('ru-RU').format(am
                     </div>
 
                     <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-                        <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-gradient-to-r from-white to-slate-50">
+                        <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-linear-to-r from-white to-slate-50">
                             <div>
                                 <h3 class="text-lg font-bold text-slate-800">Последняя активность</h3>
                             </div>
@@ -129,15 +142,20 @@ const formatMoney = (amount: number) => new Intl.NumberFormat('ru-RU').format(am
                         </div>
                         
                         <div class="relative h-56 mb-8">
-                            <Doughnut v-if="monthStats.length > 0" :data="chartData" :options="{ maintainAspectRatio: false, plugins: { legend: { display: false } } }" />
+                            <Doughnut 
+                                v-if="monthStats.length > 0" 
+                                :data="chartData" 
+                                :options="{ maintainAspectRatio: false, plugins: { legend: { display: false } } }" 
+                            />
+                            
                             <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Месяц</span>
-                                <span class="text-xl font-black text-[#A66353]">KPI</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Траты (мес.)</span>
+                                <span class="text-xl font-black text-[#A66353]">{{ formatMoney(totalSpent) }}</span>
                             </div>
                         </div>
 
                         <div class="space-y-4">
-                            <div v-for="(item, idx) in monthStats.slice(0, 4)" :key="item.name" class="flex items-center justify-between">
+                            <div v-for="(item, idx) in monthStats.slice(0, 5)" :key="item.name" class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
                                     <div class="w-2 h-2 rounded-full" :style="{ backgroundColor: chartData.datasets[0].backgroundColor[idx] }"></div>
                                     <span class="text-sm text-slate-600">{{ item.name }}</span>
