@@ -25,9 +25,6 @@ withDefaults(
             <header class="w-full max-w-7xl mx-auto px-6 py-8">
                 <nav class="flex items-center justify-between bg-white/50 backdrop-blur-md border border-white/20 p-4 rounded-2xl shadow-sm">
                     <div class="flex items-center gap-3 ml-2">
-                        <div class="w-8 h-8 bg-linear-to-tr from-[#A66353] to-[#C48477] rounded-lg flex items-center justify-center text-white shadow-lg shadow-brown-500/20">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        </div>
                         <span class="text-lg font-bold tracking-tight text-[#3A3A3A] uppercase">Казначей</span>
                     </div>
 

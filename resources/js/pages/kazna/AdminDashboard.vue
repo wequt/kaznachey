@@ -1,6 +1,7 @@
 <script setup>
 import { router } from '@inertiajs/vue3';
 import { Head } from '@inertiajs/vue3';
+import NavUser from '@/components/NavUser.vue';
 
 const props = defineProps({
     stats: Object,
@@ -8,7 +9,6 @@ const props = defineProps({
 });
 
 const toggleBlock = (user) => {
-    // Отправляем запрос только если это не админ
     if (user.role === 'admin') return;
 
     router.patch(`/admin/users/${user.id}/toggle`, {}, {
@@ -18,11 +18,18 @@ const toggleBlock = (user) => {
 </script>
 
 <template>
+
     <Head title="Панель администратора" />
 
     <div class="min-h-screen bg-[#FDFCFB] p-8">
         <div class="max-w-7xl mx-auto">
-            <h1 class="text-3xl font-bold text-gray-900 mb-8">Панель администратора «Казначей»</h1>
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900">Панель администратора «Казначей»</h1>
+
+                <div class="flex items-center">
+                    <NavUser :user="$page.props.auth.user" />
+                </div>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -57,7 +64,8 @@ const toggleBlock = (user) => {
                         <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4 font-medium text-gray-900">
                                 {{ user.name }}
-                                <span v-if="user.role === 'admin'" class="ml-2 text-[10px] bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded uppercase font-bold">
+                                <span v-if="user.role === 'admin'"
+                                    class="ml-2 text-[10px] bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded uppercase font-bold">
                                     Admin
                                 </span>
                             </td>
@@ -67,18 +75,16 @@ const toggleBlock = (user) => {
                                 <span v-else>{{ user.transactions_count }}</span>
                             </td>
                             <td class="px-6 py-4">
-                                <span :class="user.is_blocked ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'" 
-                                      class="px-3 py-1 rounded-full text-xs font-bold">
+                                <span
+                                    :class="user.is_blocked ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'"
+                                    class="px-3 py-1 rounded-full text-xs font-bold">
                                     {{ user.is_blocked ? 'Заблокирован' : 'Активен' }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <button 
-                                    v-if="user.role !== 'admin'"
-                                    @click="toggleBlock(user)"
+                                <button v-if="user.role !== 'admin'" @click="toggleBlock(user)"
                                     class="px-4 py-2 rounded-lg text-sm font-semibold transition"
-                                    :class="user.is_blocked ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-red-500 hover:bg-red-600 text-white'"
-                                >
+                                    :class="user.is_blocked ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-red-500 hover:bg-red-600 text-white'">
                                     {{ user.is_blocked ? 'Разблокировать' : 'Заблокировать' }}
                                 </button>
                                 <span v-else class="text-xs text-gray-400 italic">Системный аккаунт</span>

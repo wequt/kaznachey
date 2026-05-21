@@ -12,6 +12,7 @@ import {
     TrendingUp
 } from 'lucide-vue-next'; 
 import { computed } from 'vue';
+import NavUser from '@/components/NavUser.vue';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -52,10 +53,16 @@ const formatMoney = (amount: number) => {
     <div class="min-h-screen bg-[#FDFCFB] py-8 px-6 text-slate-900">
         <div class="max-w-7xl mx-auto">
             
-            <div class="mb-10">
-                <h1 class="text-3xl font-black tracking-tight text-slate-800">Общий обзор</h1>
-                <p class="text-slate-500 italic">Аналитическая панель управления капиталом</p>
-            </div>
+            <div class="mb-10 flex justify-between items-start">
+    <div>
+        <h1 class="text-3xl font-black tracking-tight text-slate-800">Общий обзор</h1>
+        <p class="text-slate-500 italic">Аналитическая панель управления капиталом</p>
+    </div>
+
+    <div class="flex items-center">
+        <NavUser :user="$page.props.auth.user" />
+    </div>
+</div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
