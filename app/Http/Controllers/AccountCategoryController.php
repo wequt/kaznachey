@@ -16,6 +16,10 @@ class AccountCategoryController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
+        if ($user && $user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         return Inertia::render('kazna/DirectoriesPage', [
             'accounts' => $user->accounts()->latest()->get(),
             'categories' => $user->categories()->latest()->get(),

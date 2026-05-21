@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountCategoryController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\DashboardController;
@@ -28,7 +29,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
 
     Route::get('/budgets', [BudgetController::class, 'index'])->name('budgets.index');
-Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
+    Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
+});
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::patch('/users/{user}/toggle', [AdminController::class, 'toggleBlock'])->name('admin.users.toggle');
 });
 
 require __DIR__ . '/settings.php';

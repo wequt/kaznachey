@@ -4,14 +4,17 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
+use Illuminate\Validation\ValidationException;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -31,6 +34,19 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
+
+        Fortify::authenticateUsing(function ($request) {
+    $user = User::where('email', $request->email)->first();
+
+    if ($user && Hash::check($request->password, $user->password)) {
+        if ($user->is_blocked) {
+            throw ValidationException::withMessages([
+                Fortify::username() => ['Ваш аккаунт заблокирован администратором.'],
+            ]);
+        }
+        return $user;
+    }
+});
     }
 
     /**

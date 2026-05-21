@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\Account;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -11,8 +12,15 @@ use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function index(): Response
+    public function index()
     {
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($user && $user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $userId = Auth::id();
 
         $totalBalance = Account::where('user_id', $userId)->sum('balance');

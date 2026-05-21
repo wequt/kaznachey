@@ -5,24 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\Account;
 use App\Models\Category;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Inertia\Response;
-use Illuminate\Http\RedirectResponse;
 
 class TransactionController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request)
     {
-        $user = Auth::user();
-
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
+        if ($user && $user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $transactions = $user->transactions()
-            ->with(['account', 'category'])
             ->with(['account', 'category'])
             ->when($request->input('search'), function ($query, $search) {
                 $query->where('description', 'like', "%{$search}%");

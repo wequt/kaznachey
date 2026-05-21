@@ -8,13 +8,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\RedirectResponse;
-use Inertia\Response;
 
 class AnalyticsController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($user && $user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $userId = Auth::id();
 
         $dateFrom = $request->input('date_from', now()->startOfMonth()->toDateString());

@@ -13,6 +13,13 @@ class BudgetController extends Controller
 {
     public function index()
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($user && $user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $userId = Auth::id();
         $currentMonth = now()->format('Y-m');
 

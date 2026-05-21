@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'role', 'is_blocked'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -51,5 +51,12 @@ class User extends Authenticatable
     public function budgets(): HasMany
     {
         return $this->hasMany(Budget::class);
+    }
+
+    const ADMIN_ROLE = 'admin';
+
+    public function isAdmin()
+    {
+        return $this->role === self::ADMIN_ROLE;
     }
 }
