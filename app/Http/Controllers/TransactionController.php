@@ -24,11 +24,22 @@ class TransactionController extends Controller
 
         $transactions = $user->transactions()
             ->with(['account', 'category'])
-            ->when($request->input('search'), function ($query, $search) {
-                $query->where('description', 'like', "%{$search}%");
-            })
             ->when($request->input('account_id'), function ($query, $accountId) {
                 $query->where('account_id', $accountId);
+            })
+            ->when($request->input('category_id'), function ($query, $categoryId) {
+                $query->where('category_id', $categoryId);
+            })
+            ->when($request->input('date_from'), function ($query, $dateFrom) {
+                $query->where('transaction_date', '>=', $dateFrom);
+            })
+            ->when($request->input('date_to'), function ($query, $dateTo) {
+                $query->where('transaction_date', '<=', $dateTo);
+            })
+            ->when($request->input('type'), function ($query, $type) {
+                $query->whereHas('category', function ($q) use ($type) {
+                    $q->where('type', $type);
+                });
             })
             ->orderBy('transaction_date', 'desc')
             ->paginate(15)
@@ -36,9 +47,9 @@ class TransactionController extends Controller
 
         return Inertia::render('kazna/TransactionsPage', [
             'transactions' => $transactions,
-            'accounts' => $user->accounts()->get(['id', 'name']),
+            'accounts' => $user->accounts()->get(['id', 'name', 'balance']),
             'categories' => Category::all(['id', 'name', 'type']),
-            'filters' => $request->only(['search', 'account_id']),
+            'filters' => $request->only(['account_id', 'category_id', 'date_from', 'date_to', 'type']),
         ]);
     }
 

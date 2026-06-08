@@ -49,7 +49,7 @@ withDefaults(
 
                     <h1 class="text-6xl md:text-8xl font-black tracking-tighter text-[#3A3A3A] leading-[0.9]">
                         Твои деньги <br/>
-                        <span class="text-transparent bg-clip-text bg-linear-to-r from-[#A66353] to-[#D4A398]">под контролем.</span>
+                        <span class="text-transparent bg-clip-text bg-linear-to-r from-[#A66353] to-[#D4A398]">под контролем</span>
                     </h1>
 
                     <p class="text-lg md:text-xl text-[#8C8C8C] max-w-xl mx-auto font-medium">
