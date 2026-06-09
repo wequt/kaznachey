@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\Account;
+use App\Models\Budget;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -39,11 +40,28 @@ class DashboardController extends Controller
             ->select('categories.name', DB::raw('SUM(transactions.amount) as total'))
             ->groupBy('categories.name')
             ->get();
+        $currentMonth = now()->format('Y-m');
+
+        $overBudgets = Budget::where('user_id', $userId)
+            ->where('budget_month', $currentMonth)
+            ->get()
+            ->filter(function ($budget) use ($userId, $currentMonth) {
+                $spent = Transaction::where('user_id', $userId)
+                    ->where('category_id', $budget->category_id)
+                    ->where('transaction_date', 'like', "$currentMonth%")
+                    ->sum('amount');
+
+                return $spent > $budget->limit_amount;
+            })
+            ->map(fn($budget) => $budget->category->name)
+            ->values()
+            ->toArray();
 
         return Inertia::render('Dashboard', [
             'totalBalance' => (float)$totalBalance,
             'recentTransactions' => $recentTransactions,
-            'monthStats' => $monthStats
+            'monthStats' => $monthStats,
+            'overBudgets' => $overBudgets
         ]);
     }
 }

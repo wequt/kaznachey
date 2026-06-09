@@ -14,6 +14,7 @@ import {
 } from 'lucide-vue-next'; 
 import { computed } from 'vue';
 import NavUser from '@/components/NavUser.vue';
+import { AlertTriangle, ArrowRight } from 'lucide-vue-next';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -21,6 +22,7 @@ const props = defineProps<{
     totalBalance: number;
     recentTransactions: Array<any>;
     monthStats: Array<{ name: string, total: number }>;
+    overBudgets: Array<string>;
 }>();
 
 const totalSpent = computed(() => {
@@ -53,6 +55,31 @@ const formatMoney = (amount: number) => {
 
     <div class="min-h-screen bg-[#FDFCFB] py-8 px-6 text-slate-900">
         <div class="max-w-7xl mx-auto">
+
+            <div 
+                v-if="props.overBudgets && props.overBudgets.length > 0" 
+                class="mb-8 bg-red-50/60 border border-red-100 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            >
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-red-600 shrink-0">
+                        <AlertTriangle class="w-5 h-5 stroke-[2.5]" />
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-sm">Внимание! Превышение лимитов</h4>
+                        <p class="text-xs text-slate-500 mt-0.5">
+                            Вы вышли за рамки бюджета в категориях: 
+                            <span class="font-semibold text-red-600">{{ props.overBudgets.join(', ') }}</span>.
+                        </p>
+                    </div>
+                </div>
+                <Link 
+                    href="/budgets" 
+                    class="inline-flex items-center gap-1.5 text-xs font-bold text-[#A66353] hover:text-[#8c5245] bg-white px-4 py-2 rounded-xl border border-slate-100 shadow-2xs self-start sm:self-center"
+                >
+                    <span>Управление лимитами</span>
+                    <ArrowRight class="w-3.5 h-3.5" />
+                </Link>
+            </div>
             
             <div class="mb-10 flex justify-between items-start">
                 <div>
