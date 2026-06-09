@@ -50,9 +50,29 @@ class AnalyticsController extends Controller
         $incomeTotal = $totalsData['income'] ?? 0;
         $expenseTotal = $totalsData['expense'] ?? 0;
 
+        $trends = Transaction::where('transactions.user_id', $userId)
+            ->join('categories', 'transactions.category_id', '=', 'categories.id')
+            ->whereBetween('transactions.transaction_date', [$dateFrom, $dateTo])
+            ->select(
+                'transactions.transaction_date as date',
+                DB::raw("SUM(CASE WHEN categories.type = 'income' THEN transactions.amount ELSE 0 END) as income"),
+                DB::raw("SUM(CASE WHEN categories.type = 'expense' THEN transactions.amount ELSE 0 END) as expense")
+            )
+            ->groupBy('transactions.transaction_date')
+            ->orderBy('transactions.transaction_date', 'asc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'date' => date('d.m', strtotime($item->date)),
+                    'income' => (float)$item->income,
+                    'expense' => (float)$item->expense,
+                ];
+            });
+
         return Inertia::render('kazna/AnalyticsPage', [
             'expensesStats' => $expensesStats,
             'incomeStats' => $incomeStats,
+            'trends' => $trends,
             'filters' => [
                 'date_from' => $dateFrom,
                 'date_to' => $dateTo

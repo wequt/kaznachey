@@ -1,28 +1,40 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
-import { Doughnut } from 'vue-chartjs';
+import { Doughnut, Line } from 'vue-chartjs';
 import { 
     TrendingUp, 
-    Calendar, 
     ArrowUpRight, 
     ArrowDownLeft, 
-    BarChart3 
+    BarChart3,
+    Activity
 } from 'lucide-vue-next';
 import { 
     Chart as ChartJS, 
     ArcElement, 
     Tooltip, 
     Legend, 
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Filler,
     ChartData, 
     ChartOptions 
 } from 'chart.js';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Filler);
+
+interface TrendItem {
+    date: string;
+    income: number;
+    expense: number;
+}
 
 const props = defineProps<{
     expensesStats: Array<{ name: string, total: number }>;
     incomeStats: Array<{ name: string, total: number }>;
+    trends: TrendItem[];
     totals: { income: number, expense: number, profit: number };
     filters: { date_from: string, date_to: string };
 }>();
@@ -57,8 +69,74 @@ const chartData = computed<ChartData<'doughnut'>>(() => ({
 const chartOptions: ChartOptions<'doughnut'> = {
     responsive: true,
     maintainAspectRatio: false,
+    plugins: { legend: { display: false } }
+};
+
+const trendChartData = computed<ChartData<'line'>>(() => ({
+    labels: props.trends.map(t => t.date),
+    datasets: [
+        {
+            label: 'Доходы',
+            borderColor: '#4AA377',
+            backgroundColor: 'rgba(74, 163, 119, 0.06)',
+            data: props.trends.map(t => t.income),
+            tension: 0.35,
+            fill: true,
+            borderWidth: 3,
+            pointBackgroundColor: '#4AA377',
+            pointHoverRadius: 6,
+            pointRadius: 2
+        },
+        {
+            label: 'Расходы',
+            borderColor: '#C85A53',
+            backgroundColor: 'rgba(200, 90, 83, 0.06)',
+            data: props.trends.map(t => t.expense),
+            tension: 0.35,
+            fill: true,
+            borderWidth: 3,
+            pointBackgroundColor: '#C85A53',
+            pointHoverRadius: 6,
+            pointRadius: 2
+        }
+    ]
+}));
+
+const trendChartOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+        mode: 'index',
+        intersect: false,
+    },
     plugins: {
-        legend: { display: false }
+        legend: {
+            display: false
+        },
+        tooltip: {
+            padding: 12,
+            cornerRadius: 12,
+            backgroundColor: '#1e293b'
+        }
+    },
+    scales: {
+        y: {
+            grid: { color: '#f1f5f9' },
+            ticks: {
+                color: '#94a3b8',
+                font: { size: 11, weight: 500 },
+                callback: (value) => new Intl.NumberFormat('ru-RU').format(Number(value)) + ' ₽'
+            },
+            border: { display: false }
+        },
+        x: {
+            grid: { display: false },
+            ticks: {
+                color: '#94a3b8',
+                font: { size: 11, weight: 500 }
+            },
+            border: { display: false }
+        }
     }
 };
 
@@ -80,8 +158,39 @@ const formatMoney = (amount: number) => {
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center gap-4 bg-slate-50/30">
-                
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Доходы за период</p>
+                        <p class="text-2xl font-black text-green-600">{{ formatMoney(totals.income) }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-500">
+                        <ArrowUpRight class="w-6 h-6" />
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Расходы за период</p>
+                        <p class="text-2xl font-black text-slate-800">{{ formatMoney(totals.expense) }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-500">
+                        <ArrowDownLeft class="w-6 h-6" />
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Чистый результат</p>
+                        <p class="text-2xl font-black text-[#A66353]">{{ formatMoney(totals.profit) }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-[#fdf5f3] rounded-2xl flex items-center justify-center text-[#A66353]">
+                        <TrendingUp class="w-6 h-6" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <div class="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
                     
                     <div class="flex bg-slate-100 p-1 rounded-xl flex-1 h-10.5">
@@ -126,42 +235,7 @@ const formatMoney = (amount: number) => {
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Доходы за период</p>
-                        <p class="text-2xl font-black text-green-600">{{ formatMoney(totals.income) }}</p>
-                    </div>
-                    <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-500">
-                        <ArrowUpRight class="w-6 h-6" />
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Расходы за период</p>
-                        <p class="text-2xl font-black text-slate-800">{{ formatMoney(totals.expense) }}</p>
-                    </div>
-                    <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-500">
-                        <ArrowDownLeft class="w-6 h-6" />
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Чистый результат</p>
-                        <p class="text-2xl font-black text-[#A66353]">{{ formatMoney(totals.profit) }}</p>
-                    </div>
-                    <div class="w-12 h-12 bg-[#fdf5f3] rounded-2xl flex items-center justify-center text-[#A66353]">
-                        <TrendingUp class="w-6 h-6" />
-                    </div>
-                </div>
-
-            </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                
                 <div class="lg:col-span-5 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="font-bold text-slate-800">
@@ -213,8 +287,39 @@ const formatMoney = (amount: number) => {
                         <p class="font-medium">Список пуст</p>
                     </div>
                 </div>
-
             </div>
+
+            <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800">Хронология баланса</h3>
+                        <p class="text-xs text-slate-400">Сопоставление ежедневных притоков и списаний за выбранный период</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-5 text-xs font-bold text-slate-500">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2.5 h-2.5 rounded-full bg-[#4AA377]"></div>
+                            <span>Доходы</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2.5 h-2.5 rounded-full bg-[#C85A53]"></div>
+                            <span>Расходы</span>
+                        </div>
+                        <div class="w-px h-4 bg-slate-200 mx-1 hidden sm:block"></div>
+                        <Activity class="w-5 h-5 text-[#A66353] hidden sm:block" />
+                    </div>
+                </div>
+                
+                <div class="h-72">
+                    <template v-if="trends.length > 0">
+                        <Line :data="trendChartData" :options="trendChartOptions" />
+                    </template>
+                    <div v-else class="h-full flex items-center justify-center text-slate-400">
+                        Недостаточно данных для построения хронологии
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </template>
