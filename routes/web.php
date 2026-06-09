@@ -22,6 +22,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/directories', [AccountCategoryController::class, 'index'])->name('directories.index');
     Route::post('/directories/accounts', [AccountCategoryController::class, 'storeAccount'])->name('accounts.store');
+    Route::post('/directories/transfer', [AccountCategoryController::class, 'transfer'])->name('accounts.transfer');
+    Route::put('/directories/accounts/{account}', [AccountCategoryController::class, 'updateAccount'])->name('accounts.update');
     Route::post('/directories/categories', [AccountCategoryController::class, 'storeCategory'])->name('categories.store');
     Route::delete('/directories/accounts/{account}', [AccountCategoryController::class, 'destroyAccount'])->name('accounts.destroy');
     Route::delete('/directories/categories/{category}', [AccountCategoryController::class, 'destroyCategory'])->name('categories.destroy');

@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import TransactionForm from '@/components/TransactionForm.vue';
-import { Trash2, ArrowUpRight, ArrowDownLeft, History, PlusCircle } from 'lucide-vue-next';
+import { Trash2, ArrowUpRight, ArrowDownLeft, ArrowLeftRight, History, PlusCircle } from 'lucide-vue-next';
 
 interface Account {
     id: number;
@@ -22,7 +22,9 @@ interface Transaction {
     transaction_date: string;
     description: string | null;
     account: Account;
-    category: Category;
+    category: Category | null;
+    destination_account_id?: number | null;
+    destination_account?: Account | null;
 }
 
 interface Props {
@@ -203,22 +205,33 @@ const formatCurrency = (amount: number) => {
                                     {{ formatDate(item.transaction_date) }}
                                 </td>
                                 <td class="px-8 py-6">
-                                    <div class="font-bold text-slate-800">{{ item.description || 'Без описания' }}</div>
-                                    <div class="text-[10px] font-bold uppercase text-slate-400 tracking-tight bg-slate-100 px-2 py-0.5 rounded inline-block mt-1">
-                                        {{ item.account.name }}
+                                    <div class="font-bold text-slate-800">
+                                        {{ item.destination_account_id ? 'Внутренний перевод' : (item.description || 'Без описания') }}
+                                    </div>
+                                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                                        <span class="text-[10px] font-bold uppercase text-slate-400 tracking-tight bg-slate-100 px-2 py-0.5 rounded">
+                                            {{ item.account.name }}
+                                        </span>
+                                        <template v-if="item.destination_account_id && item.destination_account">
+                                            <span class="text-slate-400 text-xs">→</span>
+                                            <span class="text-[10px] font-bold uppercase text-amber-700 tracking-tight bg-amber-50 px-2 py-0.5 rounded">
+                                                {{ item.destination_account.name }}
+                                            </span>
+                                        </template>
                                     </div>
                                 </td>
                                 <td class="px-8 py-6">
                                     <span class="text-sm font-medium text-slate-600 bg-slate-50 px-3 py-1 rounded-lg">
-                                        {{ item.category.name }}
+                                        {{ item.category?.name || 'Перевод между счетами' }}
                                     </span>
                                 </td>
                                 <td class="px-8 py-6 whitespace-nowrap text-right">
                                     <div class="flex items-center justify-end gap-2">
-                                        <ArrowDownLeft v-if="item.category.type === 'expense'" class="w-4 h-4 text-red-400" />
+                                        <ArrowLeftRight v-if="item.destination_account_id" class="w-4 h-4 text-amber-500" />
+                                        <ArrowDownLeft v-else-if="item.category?.type === 'expense'" class="w-4 h-4 text-red-400" />
                                         <ArrowUpRight v-else class="w-4 h-4 text-green-400" />
-                                        <span class="text-lg font-black" :class="item.category.type === 'expense' ? 'text-slate-800' : 'text-green-600'">
-                                            {{ item.category.type === 'expense' ? '-' : '+' }} {{ formatCurrency(Number(item.amount)) }}
+                                        <span class="text-lg font-black" :class="item.destination_account_id ? 'text-slate-600' : (item.category?.type === 'expense' ? 'text-slate-800' : 'text-green-600')">
+                                            {{ item.destination_account_id ? '' : (item.category?.type === 'expense' ? '-' : '+') }} {{ formatCurrency(Number(item.amount)) }}
                                         </span>
                                     </div>
                                 </td>

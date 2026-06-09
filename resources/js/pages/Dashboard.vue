@@ -6,6 +6,7 @@ import {
     Wallet, 
     ArrowUpRight, 
     ArrowDownLeft, 
+    ArrowLeftRight,
     PieChart, 
     List,
     PiggyBank,
@@ -54,15 +55,15 @@ const formatMoney = (amount: number) => {
         <div class="max-w-7xl mx-auto">
             
             <div class="mb-10 flex justify-between items-start">
-    <div>
-        <h1 class="text-3xl font-black tracking-tight text-slate-800">Общий обзор</h1>
-        <p class="text-slate-500 italic">Аналитическая панель управления капиталом</p>
-    </div>
+                <div>
+                    <h1 class="text-3xl font-black tracking-tight text-slate-800">Общий обзор</h1>
+                    <p class="text-slate-500 italic">Аналитическая панель управления капиталом</p>
+                </div>
 
-    <div class="flex items-center">
-        <NavUser :user="$page.props.auth.user" />
-    </div>
-</div>
+                <div class="flex items-center">
+                    <NavUser :user="$page.props.auth.user" />
+                </div>
+            </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
@@ -116,25 +117,37 @@ const formatMoney = (amount: number) => {
                         <div class="divide-y divide-slate-50">
                             <div v-for="tx in recentTransactions" :key="tx.id" class="p-6 flex items-center justify-between hover:bg-slate-50/50 transition">
                                 <div class="flex items-center gap-5">
-                                    <div :class="tx.category.type === 'expense' ? 'bg-red-50 text-red-500' : 'bg-green-50 text-green-500'" 
+                                    <div :class="tx.destination_account_id ? 'bg-amber-50 text-amber-600' : (tx.category?.type === 'expense' ? 'bg-red-50 text-red-500' : 'bg-green-50 text-green-500')" 
                                          class="w-12 h-12 rounded-2xl flex items-center justify-center">
-                                        <ArrowDownLeft v-if="tx.category.type === 'expense'" class="w-6 h-6" />
+                                        <ArrowLeftRight v-if="tx.destination_account_id" class="w-6 h-6" />
+                                        <ArrowDownLeft v-else-if="tx.category?.type === 'expense'" class="w-6 h-6" />
                                         <ArrowUpRight v-else class="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <p class="font-bold text-slate-800">{{ tx.description || tx.category.name }}</p>
-                                        <div class="flex items-center gap-2 text-xs text-slate-400">
-                                            <span class="bg-slate-100 px-2 py-0.5 rounded text-slate-600">{{ tx.account.name }}</span>
+                                        <p class="font-bold text-slate-800">
+                                            {{ tx.destination_account_id ? 'Внутренний перевод' : (tx.description || tx.category?.name) }}
+                                        </p>
+                                        <div class="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+                                            <template v-if="tx.destination_account_id">
+                                                <span class="bg-slate-100 px-2 py-0.5 rounded text-slate-600 font-medium">{{ tx.account?.name }}</span>
+                                                <span>→</span>
+                                                <span class="bg-amber-50 px-2 py-0.5 rounded text-amber-800 font-medium">{{ tx.destination_account?.name }}</span>
+                                            </template>
+                                            <template v-else>
+                                                <span class="bg-slate-100 px-2 py-0.5 rounded text-slate-600 font-medium">{{ tx.account?.name }}</span>
+                                            </template>
                                             <span>•</span>
                                             <span>{{ tx.transaction_date }}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-lg font-black" :class="tx.category.type === 'expense' ? 'text-slate-800' : 'text-green-600'">
-                                        {{ tx.category.type === 'expense' ? '-' : '+' }}{{ formatMoney(tx.amount) }}
+                                    <p class="text-lg font-black" :class="tx.destination_account_id ? 'text-slate-600' : (tx.category?.type === 'expense' ? 'text-slate-800' : 'text-green-600')">
+                                        {{ tx.destination_account_id ? '' : (tx.category?.type === 'expense' ? '-' : '+') }}{{ formatMoney(tx.amount) }}
                                     </p>
-                                    <p class="text-[10px] uppercase font-bold text-slate-300">{{ tx.category.name }}</p>
+                                    <p class="text-[10px] uppercase font-bold text-slate-300 mt-0.5">
+                                        {{ tx.destination_account_id ? 'Перевод' : tx.category?.name }}
+                                    </p>
                                 </div>
                             </div>
                         </div>

@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use App\Models\Account;
 use App\Models\Category;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class AccountCategoryController extends Controller
@@ -39,6 +41,56 @@ class AccountCategoryController extends Controller
         $user->accounts()->create($validated);
 
         return redirect()->back();
+    }
+
+    public function updateAccount(Request $request, Account $account): RedirectResponse
+    {
+        if ($account->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $account->update($validated);
+
+        return redirect()->back();
+    }
+
+    public function transfer(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'account_id' => 'required|exists:accounts,id',
+            'destination_account_id' => 'required|exists:accounts,id|different:account_id',
+            'amount' => 'required|numeric|min:0.01',
+            'description' => 'nullable|string|max:255',
+        ]);
+
+        $sourceAccount = Account::findOrFail($validated['account_id']);
+        $destinationAccount = Account::findOrFail($validated['destination_account_id']);
+
+        // Проверка прав собственности
+        if ($sourceAccount->user_id !== Auth::id() || $destinationAccount->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Выполняем атомарную транзакцию в БД
+        DB::transaction(function () use ($validated, $sourceAccount, $destinationAccount) {
+            $sourceAccount->decrement('balance', $validated['amount']);
+            $destinationAccount->increment('balance', $validated['amount']);
+
+            Transaction::create([
+                'user_id' => Auth::id(),
+                'account_id' => $validated['account_id'],
+                'destination_account_id' => $validated['destination_account_id'],
+                'amount' => $validated['amount'],
+                'description' => $validated['description'] ?? 'Перевод между счетами',
+                'transaction_date' => now()->format('Y-m-d'),
+            ]);
+        });
+
+        return redirect()->back()->with('success', 'Перевод успешно выполнен');
     }
 
     public function storeCategory(Request $request)

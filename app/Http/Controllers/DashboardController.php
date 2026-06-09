@@ -26,7 +26,7 @@ class DashboardController extends Controller
         $totalBalance = Account::where('user_id', $userId)->sum('balance');
 
         $recentTransactions = Transaction::where('transactions.user_id', $userId)
-            ->with(['category', 'account'])
+            ->with(['category', 'account', 'destinationAccount'])
             ->orderBy('transaction_date', 'desc')
             ->limit(5)
             ->get();
