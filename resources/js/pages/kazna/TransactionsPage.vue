@@ -94,8 +94,8 @@ const formatCurrency = (amount: number) => {
 <template>
     <Head title="Журнал операций" />
 
-    <div class="min-h-screen bg-[#FDFCFB] py-12 px-6">
-        <div class="max-w-6xl mx-auto space-y-8">
+    <div class="min-h-screen bg-[#FDFCFB] py-8 px-6">
+        <div class="max-w-7xl mx-auto space-y-8">
             
             <div class="flex items-center justify-between">
                 <div>
