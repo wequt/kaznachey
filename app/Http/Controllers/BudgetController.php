@@ -39,8 +39,8 @@ class BudgetController extends Controller
                     'limit_amount' => (float)$budget->limit_amount,
                     'spent_amount' => (float)$spent,
                     'remaining' => (float)($budget->limit_amount - $spent),
-                    'progress' => $budget->limit_amount > 0 
-                        ? min(round(($spent / $budget->limit_amount) * 100, 1), 100) 
+                    'progress' => $budget->limit_amount > 0
+                        ? min(round(($spent / $budget->limit_amount) * 100, 1), 100)
                         : 0,
                     'is_over_limit' => $spent > $budget->limit_amount
                 ];
@@ -64,12 +64,23 @@ class BudgetController extends Controller
 
         Budget::updateOrCreate(
             [
-                'user_id' => Auth::id(), 
+                'user_id' => Auth::id(),
                 'category_id' => $validated['category_id'],
                 'budget_month' => now()->format('Y-m')
             ],
             ['limit_amount' => $validated['limit_amount']]
         );
+
+        return back();
+    }
+
+    public function destroy(Budget $budget)
+    {
+        if ($budget->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+            abort(403);
+        }
+
+        $budget->delete();
 
         return back();
     }
