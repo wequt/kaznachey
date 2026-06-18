@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
+import Header from '@/components/Header.vue';
 import { Doughnut, Line } from 'vue-chartjs';
 import {
     TrendingUp,
@@ -160,56 +161,53 @@ const formatMoney = (amount: number) => {
 </script>
 
 <template>
-
     <Head title="Аналитика" />
 
-    <div class="min-h-screen bg-[#FDFCFB] py-8 px-6 text-slate-900">
-        <div class="max-w-7xl mx-auto space-y-8">
+    <Header />
+
+    <div class="min-h-screen bg-[#FDFCFB] py-6 sm:py-8 px-4 sm:px-6 text-slate-900">
+        <div class="max-w-7xl mx-auto space-y-6 sm:space-y-8">
 
             <div class="flex justify-between items-start">
                 <div>
-                    <h1 class="text-3xl font-black tracking-tight text-slate-800">Аналитика финансов</h1>
-                    <p class="text-slate-500 italic">Подробный разбор ваших доходов и расходов</p>
+                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-800">Аналитика финансов</h1>
+                    <p class="text-sm sm:text-base text-slate-500 italic">Подробный разбор ваших доходов и расходов</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div
-                    class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                <div class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Доходы за период</p>
-                        <p class="text-2xl font-black text-green-600">{{ formatMoney(totals.income) }}</p>
+                        <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Доходы за период</p>
+                        <p class="text-xl sm:text-2xl font-black text-green-600">{{ formatMoney(totals.income) }}</p>
                     </div>
-                    <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-500">
-                        <ArrowUpRight class="w-6 h-6" />
+                    <div class="w-11 h-11 sm:w-12 sm:h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-500 shrink-0">
+                        <ArrowUpRight class="w-5 sm:w-6 h-5 sm:h-6" />
                     </div>
                 </div>
 
-                <div
-                    class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+                <div class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Расходы за период</p>
-                        <p class="text-2xl font-black text-slate-800">{{ formatMoney(totals.expense) }}</p>
+                        <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Расходы за период</p>
+                        <p class="text-xl sm:text-2xl font-black text-slate-800">{{ formatMoney(totals.expense) }}</p>
                     </div>
-                    <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-500">
-                        <ArrowDownLeft class="w-6 h-6" />
+                    <div class="w-11 h-11 sm:w-12 sm:h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 shrink-0">
+                        <ArrowDownLeft class="w-5 sm:w-6 h-5 sm:h-6" />
                     </div>
                 </div>
 
-                <div
-                    class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+                <div class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between sm:col-span-2 md:col-span-1">
                     <div>
-                        <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Чистый результат</p>
-                        <p class="text-2xl font-black text-[#A66353]">{{ formatMoney(totals.profit) }}</p>
+                        <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Чистый результат</p>
+                        <p class="text-xl sm:text-2xl font-black text-[#A66353]">{{ formatMoney(totals.profit) }}</p>
                     </div>
-                    <div class="w-12 h-12 bg-[#fdf5f3] rounded-2xl flex items-center justify-center text-[#A66353]">
-                        <TrendingUp class="w-6 h-6" />
+                    <div class="w-11 h-11 sm:w-12 sm:h-12 bg-[#fdf5f3] rounded-2xl flex items-center justify-center text-[#A66353] shrink-0">
+                        <TrendingUp class="w-5 sm:w-6 h-5 sm:h-6" />
                     </div>
                 </div>
             </div>
 
-            <div
-                class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <div class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-100 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <div class="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
 
                     <div class="flex bg-slate-100 p-1 rounded-xl flex-1 h-10.5">
@@ -240,11 +238,10 @@ const formatMoney = (amount: number) => {
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div
-                    class="lg:col-span-5 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
+                <div class="lg:col-span-5 bg-white p-5 sm:p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-bold text-slate-800">
+                        <h3 class="font-bold text-slate-800 text-base sm:text-lg">
                             {{ selectedType === 'expense' ? 'Структура расходов' : 'Структура доходов' }}
                         </h3>
                         <BarChart3 class="w-5 h-5 text-[#A66353]" />
@@ -254,31 +251,30 @@ const formatMoney = (amount: number) => {
                         <template v-if="currentStats.length > 0">
                             <Doughnut :data="chartData" :options="chartOptions" />
                             <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                <span class="text-xl font-black text-[#A66353]">
+                                <span class="text-lg sm:text-xl font-black text-[#A66353]">
                                     {{ selectedType === 'expense' ? formatMoney(totals.expense) :
                                         formatMoney(totals.income) }}
                                 </span>
                             </div>
                         </template>
                         <div v-else class="h-full flex flex-col items-center justify-center text-slate-400 gap-2">
-                            <p class="font-medium text-base">Нет данных за выбранный период</p>
+                            <p class="font-medium text-sm sm:text-base">Нет данных за выбранный период</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:col-span-7 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
-                    <h3 class="text-lg font-bold text-slate-800 mb-6">Детализация по категориям</h3>
+                <div class="lg:col-span-7 bg-white p-5 sm:p-8 rounded-3xl border border-slate-100 shadow-sm">
+                    <h3 class="text-base sm:text-lg font-bold text-slate-800 mb-6">Детализация по категориям</h3>
 
                     <div v-if="currentStats.length > 0" class="space-y-5">
                         <div v-for="(item, idx) in currentStats" :key="item.name" class="group">
-                            <div class="flex justify-between mb-1.5 text-sm items-center">
+                            <div class="flex justify-between mb-1.5 text-xs sm:text-sm items-center">
                                 <div class="flex items-center gap-2.5">
                                     <div class="w-2.5 h-2.5 rounded-full"
                                         :style="{ backgroundColor: chartColors[idx % chartColors.length] }"></div>
-                                    <span
-                                        class="font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{{
-                                            item.name
-                                        }}</span>
+                                    <span class="font-medium text-slate-600 group-hover:text-slate-900 transition-colors">
+                                        {{ item.name }}
+                                    </span>
                                 </div>
                                 <span class="font-bold text-slate-800">{{ formatMoney(Number(item.total)) }}</span>
                             </div>
@@ -293,17 +289,16 @@ const formatMoney = (amount: number) => {
                     </div>
 
                     <div v-else class="text-center py-20 text-slate-400">
-                        <p class="font-medium">Список пуст</p>
+                        <p class="font-medium text-sm">Список пуст</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+            <div class="bg-white p-5 sm:p-8 rounded-3xl border border-slate-100 shadow-sm">
                 <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
                     <div>
-                        <h3 class="font-bold text-lg text-slate-800">Хронология баланса</h3>
-                        <p class="text-xs text-slate-400">Сопоставление ежедневных притоков и списаний за выбранный
-                            период</p>
+                        <h3 class="font-bold text-base sm:text-lg text-slate-800">Хронология баланса</h3>
+                        <p class="text-xs text-slate-400">Сопоставление ежедневных притоков и списаний за выбранный период</p>
                     </div>
 
                     <div class="flex items-center gap-5 text-xs font-bold text-slate-500">
@@ -320,11 +315,11 @@ const formatMoney = (amount: number) => {
                     </div>
                 </div>
 
-                <div class="h-72">
+                <div class="h-64 sm:h-72">
                     <template v-if="trends.length > 0">
                         <Line :data="trendChartData" :options="trendChartOptions" />
                     </template>
-                    <div v-else class="h-full flex items-center justify-center text-slate-400">
+                    <div v-else class="h-full flex items-center justify-center text-slate-400 text-sm">
                         Недостаточно данных для построения хронологии
                     </div>
                 </div>

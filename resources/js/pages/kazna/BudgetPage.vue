@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, useForm, router } from '@inertiajs/vue3';
 import { PiggyBank, AlertCircle, Plus, CheckCircle2, Calendar, Trash2 } from 'lucide-vue-next';
+import Header from '@/components/Header.vue';
 
 const props = defineProps<{
     budgets: Array<{
@@ -48,6 +49,8 @@ const formatMonthLabel = (monthStr: string) => {
 <template>
     <Head title="Лимиты расходов" />
 
+    <Header />
+
     <div class="min-h-screen bg-[#FDFCFB] py-8 px-6 text-slate-900">
         <div class="max-w-7xl mx-auto space-y-8">
             
@@ -90,7 +93,7 @@ const formatMonthLabel = (monthStr: string) => {
                         type="submit"
                         class="bg-[#A66353] text-white px-5 py-2.5 rounded-xl hover:bg-[#8c5245] transition-all font-bold text-xs shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                     >
-                        <Plus class="w-4 h-4 stroke-[3]" />
+                        <Plus class="w-4 h-4 stroke-3" />
                         <span>Установить</span>
                     </button>
                 </form>
@@ -159,7 +162,7 @@ const formatMonthLabel = (monthStr: string) => {
                             <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                                 <div 
                                     class="h-2 rounded-full transition-all duration-700 shadow-xs" 
-                                    :class="budget.is_over_limit ? 'bg-gradient-to-r from-red-400 to-red-500' : 'bg-[#A66353]'"
+                                    :class="budget.is_over_limit ? 'bg-linear-to-r from-red-400 to-red-500' : 'bg-[#A66353]'"
                                     :style="{ width: budget.progress + '%' }"
                                 >
                                 </div>

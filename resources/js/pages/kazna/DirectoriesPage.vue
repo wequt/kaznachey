@@ -2,6 +2,8 @@
 import { ref, computed } from 'vue';
 import { useForm, Head, router } from '@inertiajs/vue3';
 import { Pencil, X, Check, ArrowLeftRight, Wallet, Plus } from 'lucide-vue-next';
+import Header from '@/components/Header.vue';
+
 
 const props = defineProps<{
     accounts: Array<{ id: number, name: string, balance: number, currency: string }>;
@@ -91,6 +93,8 @@ const formatNumber = (amount: number) => {
 
 <template>
     <Head title="Счета и категории" />
+    
+    <Header />
 
     <div class="min-h-screen bg-[#FDFCFB] py-8 px-6 text-slate-900">
         <div class="max-w-7xl mx-auto space-y-8">
@@ -187,7 +191,7 @@ const formatNumber = (amount: number) => {
                                         </template>
                                     </div>
 
-                                    <span class="font-black text-slate-800 text-sm sm:text-base text-right min-w-[45px]">
+                                    <span class="font-black text-slate-800 text-sm sm:text-base text-right min-w-11.25">
                                         {{ formatNumber(acc.balance) }} ₽
                                     </span>
                                 </div>
@@ -262,7 +266,7 @@ const formatNumber = (amount: number) => {
                                     : 'bg-red-50/60 text-red-700 border-red-100/70'"
                                 class="flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                             >
-                                <span class="truncate max-w-[100px] sm:max-w-none">{{ cat.name }}</span>
+                                <span class="truncate max-w-25 sm:max-w-none">{{ cat.name }}</span>
                                 <button 
                                     @click="deleteCategory(cat.id)"
                                     class="text-current opacity-40 hover:opacity-100 transition-opacity text-base leading-none cursor-pointer"
