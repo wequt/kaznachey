@@ -97,9 +97,6 @@ const formatMoney = (amount: number) => {
                         <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-800">Общий обзор</h1>
                         <p class="text-sm sm:text-base text-slate-500 italic mt-0.5 sm:mt-0">Аналитическая панель управления капиталом</p>
                     </div>
-                    <div class="flex sm:hidden justify-end">
-                        <NavUser :user="$page.props.auth.user" />
-                    </div>
                 </div>
 
                 <div class="shrink-0">
