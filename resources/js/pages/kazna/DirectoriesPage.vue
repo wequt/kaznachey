@@ -4,7 +4,6 @@ import { useForm, Head, router } from '@inertiajs/vue3';
 import { Pencil, X, Check, ArrowLeftRight, Wallet, Plus } from 'lucide-vue-next';
 import Header from '@/components/Header.vue';
 
-
 const props = defineProps<{
     accounts: Array<{ id: number, name: string, balance: number, currency: string }>;
     categories: Array<{ id: number, name: string, type: string, icon: string }>;
@@ -96,23 +95,23 @@ const formatNumber = (amount: number) => {
     
     <Header />
 
-    <div class="min-h-screen bg-[#FDFCFB] py-8 px-6 text-slate-900">
-        <div class="max-w-7xl mx-auto space-y-8">
+    <div class="min-h-screen bg-[#FDFCFB] py-6 sm:py-8 px-4 sm:px-6 text-slate-900">
+        <div class="max-w-7xl mx-auto space-y-6 sm:space-y-8">
             
             <div>
-                <h1 class="text-3xl font-black tracking-tight text-slate-800">Счета и категории</h1>
-                <p class="text-slate-500 italic">Управление справочниками и кошельками</p>
+                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-800">Счета и категории</h1>
+                <p class="text-sm sm:text-base text-slate-500 italic">Управление справочниками и кошельками</p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                 
-                <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                <div class="bg-white p-5 sm:p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between">
                     <div>
-                        <div class="flex items-baseline justify-between mb-6">
-                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 mb-6">
+                            <h3 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
                                 <Wallet class="w-5 h-5 text-[#A66353]" /> Мои счета
                             </h3>
-                            <div class="text-right">
+                            <div class="text-left sm:text-right">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Общий баланс</span>
                                 <span class="text-xl font-black text-[#A66353]">{{ formatNumber(totalBalance) }} ₽</span>
                             </div>
@@ -149,21 +148,21 @@ const formatNumber = (amount: number) => {
                             <div 
                                 v-for="acc in accounts" 
                                 :key="acc.id"
-                                class="flex justify-between items-center p-4 bg-slate-50/40 hover:bg-slate-50/80 border border-slate-50 rounded-2xl group transition-all duration-200"
+                                class="flex justify-between items-center p-4 bg-slate-50/40 hover:bg-slate-50/80 border border-slate-50 rounded-2xl group transition-all duration-200 gap-2"
                             >
-                                <div class="flex-1 min-w-0 pr-4">
+                                <div class="flex-1 min-w-0">
                                     <div v-if="editingAccountId === acc.id" class="flex items-center gap-1.5">
                                         <input 
                                             v-model="editingAccountName" 
                                             type="text"
-                                            class="flex-1 h-8 px-2 text-sm font-bold rounded-md border border-slate-200 bg-white text-slate-800 focus:border-[#A66353] outline-hidden" 
+                                            class="w-full h-8 px-2 text-sm font-bold rounded-md border border-slate-200 bg-white text-slate-800 focus:border-[#A66353] outline-hidden" 
                                             @keyup.enter="saveAccountName(acc.id)"
                                         />
                                     </div>
                                     <span v-else class="font-bold text-slate-700 truncate block text-sm sm:text-base">{{ acc.name }}</span>
                                 </div>
 
-                                <div class="flex items-center gap-3 shrink-0">
+                                <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                                     <div class="flex items-center gap-0.5 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                         <template v-if="editingAccountId === acc.id">
                                             <button @click="saveAccountName(acc.id)" class="text-green-600 hover:bg-green-50 p-1 rounded-md cursor-pointer">
@@ -191,7 +190,7 @@ const formatNumber = (amount: number) => {
                                         </template>
                                     </div>
 
-                                    <span class="font-black text-slate-800 text-sm sm:text-base text-right min-w-11.25">
+                                    <span class="font-black text-slate-800 text-sm sm:text-base text-right min-w-15">
                                         {{ formatNumber(acc.balance) }} ₽
                                     </span>
                                 </div>
@@ -200,22 +199,22 @@ const formatNumber = (amount: number) => {
                     </div>
                 </div>
 
-                <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                <div class="bg-white p-5 sm:p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between">
                     <div>
-                        <h3 class="text-lg font-bold text-slate-800 mb-6">Мои категории</h3>
+                        <h3 class="text-base sm:text-lg font-bold text-slate-800 mb-6">Мои категории</h3>
 
                         <form @submit.prevent="submitCategory" class="mb-6 space-y-3">
-                            <div class="grid grid-cols-3 gap-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <input 
                                     v-model="categoryForm.name" 
                                     type="text" 
-                                    placeholder="Название"
+                                    placeholder="Название категории"
                                     required
-                                    class="col-span-2 w-full h-11 px-4 text-sm font-medium rounded-xl border border-slate-200 bg-slate-50/30 text-slate-700 focus:border-[#A66353] focus:bg-white focus:ring-1 focus:ring-[#A66353] outline-hidden transition-all" 
+                                    class="sm:col-span-2 w-full h-11 px-4 text-sm font-medium rounded-xl border border-slate-200 bg-slate-50/30 text-slate-700 focus:border-[#A66353] focus:bg-white focus:ring-1 focus:ring-[#A66353] outline-hidden transition-all" 
                                 />
                                 <select 
                                     v-model="categoryForm.type"
-                                    class="w-full h-11 px-2 text-xs font-bold rounded-xl border border-slate-200 bg-slate-50/30 text-slate-700 focus:border-[#A66353] focus:bg-white focus:ring-1 focus:ring-[#A66353] outline-hidden transition-all cursor-pointer"
+                                    class="w-full h-11 px-3 text-sm font-bold rounded-xl border border-slate-200 bg-slate-50/30 text-slate-700 focus:border-[#A66353] focus:bg-white focus:ring-1 focus:ring-[#A66353] outline-hidden transition-all cursor-pointer"
                                 >
                                     <option value="expense">Расход</option>
                                     <option value="income">Доход</option>
@@ -266,7 +265,7 @@ const formatNumber = (amount: number) => {
                                     : 'bg-red-50/60 text-red-700 border-red-100/70'"
                                 class="flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                             >
-                                <span class="truncate max-w-25 sm:max-w-none">{{ cat.name }}</span>
+                                <span class="truncate max-w-15 sm:max-w-none">{{ cat.name }}</span>
                                 <button 
                                     @click="deleteCategory(cat.id)"
                                     class="text-current opacity-40 hover:opacity-100 transition-opacity text-base leading-none cursor-pointer"
@@ -285,13 +284,13 @@ const formatNumber = (amount: number) => {
 
             </div>
 
-            <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm">
-                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <div class="bg-white p-5 sm:p-8 rounded-3xl border border-slate-100 shadow-sm">
+                <h3 class="text-base sm:text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
                     <ArrowLeftRight class="w-5 h-5 text-amber-600" /> Внутренний перевод
                 </h3>
 
                 <form @submit.prevent="submitTransfer" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         
                         <div>
                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Счет списания</label>
@@ -320,7 +319,7 @@ const formatNumber = (amount: number) => {
                                     :key="acc.id" 
                                     :value="acc.id"
                                     :disabled="acc.id === Number(transferForm.account_id)"
-                                Dino>
+                                >
                                     {{ acc.name }} ({{ formatNumber(acc.balance) }} ₽)
                                 </option>
                             </select>
@@ -354,7 +353,7 @@ const formatNumber = (amount: number) => {
                         <button 
                             type="submit" 
                             :disabled="transferForm.processing"
-                            class="w-full lg:w-auto px-6 h-11 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold rounded-xl transition-colors cursor-pointer shadow-xs flex items-center justify-center gap-2"
+                            class="w-full sm:w-auto sm:px-6 h-11 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold rounded-xl transition-colors cursor-pointer shadow-xs flex items-center justify-center gap-2"
                         >
                             <ArrowLeftRight class="w-4 h-4" /> Выполнить перевод
                         </button>
@@ -366,3 +365,9 @@ const formatNumber = (amount: number) => {
         </div>
     </div>
 </template>
+
+<style scoped>
+:deep(b) {
+    font-weight: 900;
+}
+</style>

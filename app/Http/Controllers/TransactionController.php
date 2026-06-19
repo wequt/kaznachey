@@ -23,9 +23,12 @@ class TransactionController extends Controller
         }
 
         $transactions = $user->transactions()
-            ->with(['account', 'category'])
+            ->with(['account', 'category', 'destinationAccount'])
             ->when($request->input('account_id'), function ($query, $accountId) {
-                $query->where('account_id', $accountId);
+                $query->where(function ($q) use ($accountId) {
+                    $q->where('account_id', $accountId)
+                      ->orWhere('destination_account_id', $accountId);
+                });
             })
             ->when($request->input('category_id'), function ($query, $categoryId) {
                 $query->where('category_id', $categoryId);
@@ -42,6 +45,7 @@ class TransactionController extends Controller
                 });
             })
             ->orderBy('transaction_date', 'desc')
+            ->orderBy('id', 'desc')
             ->paginate(15)
             ->withQueryString();
 

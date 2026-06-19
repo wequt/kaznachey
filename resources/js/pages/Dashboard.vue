@@ -91,14 +91,11 @@ const formatMoney = (amount: number) => {
                 </Link>
             </div>
 
-            <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
-                <div class="flex justify-between items-center gap-4">
-                    <div>
-                        <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-800">Общий обзор</h1>
-                        <p class="text-sm sm:text-base text-slate-500 italic mt-0.5 sm:mt-0">Аналитическая панель управления капиталом</p>
-                    </div>
+            <div class="flex justify-between items-center gap-4">
+                <div class="min-w-0">
+                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-800 truncate">Общий обзор</h1>
+                    <p class="text-sm sm:text-base text-slate-500 italic mt-0.5 sm:mt-0 truncate">Аналитическая панель управления капиталом</p>
                 </div>
-
                 <div class="shrink-0">
                     <NavUser :user="$page.props.auth.user" />
                 </div>
@@ -194,8 +191,8 @@ const formatMoney = (amount: number) => {
                                         :class="tx.destination_account_id ? 'text-slate-600' : (tx.category?.type === 'expense' ? 'text-slate-800' : 'text-green-600')">
                                         {{ tx.destination_account_id ? '' : (tx.category?.type === 'expense' ? '-' : '+') }}{{ formatMoney(tx.amount) }}
                                     </p>
-                                    <p class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400 mt-0.5 truncate max-w-25 sm:max-w-none">
-                                        {{ tx.destination_account_id ? 'Перевод' : (tx.category?.name || 'Без категории') }}
+                                    <p v-if="tx.destination_account_id || tx.category?.name" class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400 mt-0.5 truncate max-w-25 sm:max-w-none">
+                                        {{ tx.destination_account_id ? 'Перевод' : tx.category.name }}
                                     </p>
                                 </div>
                             </div>
@@ -233,7 +230,6 @@ const formatMoney = (amount: number) => {
                         </div>
                     </div>
 
-                    <!-- Планирование -->
                     <div class="bg-[#A66353] p-6 sm:p-8 rounded-3xl text-white shadow-xl shadow-[#a663532c] relative overflow-hidden group">
                         <div class="relative z-10">
                             <h4 class="text-base sm:text-lg font-bold mb-2">Планирование</h4>
